@@ -6,7 +6,8 @@ function(install_pkg src_location target_location)
 	if (NOT DEFINED installation_command)
 		set(installation_command "mkdir build_dir && cd build_dir &&
 			cmake .. -DCMAKE_INSTALL_PREFIX=\"$target_location\" ${installation_cmake_options} && make install"}
-	endif()
+	else()
+		set(installation_command "${installation_command} ${target_location}"
 
 	execute_process(
 		COMMAND bash -c "${depend_installation_command}"
@@ -41,7 +42,7 @@ function(download fetch_address dependency_download_location)
 endfunction()
 
 macro(add_project_dependency fetch_address name)
-    cmake_parse_arguments(dependency "no_cmake" "private_key;commit;config_path_suffix" "" ${ARGN})
+    cmake_parse_arguments(dependency "no_cmake" "private_key;commit;config_path_suffix;installation_command" "" ${ARGN})
 
 	set(dependency_download_location "${CMAKE_BINARY_DIR}/downloads/${name}")
     set(dependency_location "${dependencies}/${name}")
@@ -63,7 +64,7 @@ macro(add_project_dependency fetch_address name)
 			set(dependency_config_path_suffix cmake)
 	    endif()
 
-		depend("${dependency_download_location}/${dependency_path_suffix}" "${dependency_location}")
+		depend("${dependency_download_location}/${dependency_path_suffix}" "${dependency_location}" ${ARGN})
 
     	if (${dependency_no_cmake})
             set(${name}_root "${dependency_location}")
