@@ -1,6 +1,11 @@
+set(default_cmake_options "" CACHE STRING "Default options for install_pkg's cmake")
+
 function(install_pkg src_location target_location)
 	cmake_parse_arguments(pkg "" "installation_command;cmake_options" "" ${ARGN})
 
+	if (NOT DEFINED package_cmake_options)
+		set(pkg_cmake_options "${default_cmake_options}")
+	endif()
 
 	if (NOT DEFINED pkg_installation_command)
 		set(pkg_installation_command "mkdir build_dir && cd build_dir &&
